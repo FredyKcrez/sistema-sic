@@ -1,0 +1,226 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.1.9
+-- Dumped by pg_dump version 9.1.9
+-- Started on 2013-10-15 17:56:46 CST
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 165 (class 3079 OID 11720)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 1958 (class 0 OID 0)
+-- Dependencies: 165
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 161 (class 1259 OID 41200)
+-- Dependencies: 5
+-- Name: cuenta; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE cuenta (
+    "idCuenta" character varying(10) NOT NULL,
+    "tipoCuenta" character(1),
+    descripcion character varying(30)
+);
+
+
+ALTER TABLE public.cuenta OWNER TO postgres;
+
+--
+-- TOC entry 162 (class 1259 OID 41203)
+-- Dependencies: 5
+-- Name: saldoInicial; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE "saldoInicial" (
+    "idCuenta" character varying(10) NOT NULL,
+    monto numeric(10,2),
+    cargado boolean,
+    fecha timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE public."saldoInicial" OWNER TO postgres;
+
+--
+-- TOC entry 163 (class 1259 OID 41206)
+-- Dependencies: 5
+-- Name: transaccion; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE transaccion (
+    "idTransaccion" character varying(10) NOT NULL,
+    "noFactura" numeric(6,0),
+    fecha timestamp without time zone
+);
+
+
+ALTER TABLE public.transaccion OWNER TO postgres;
+
+--
+-- TOC entry 164 (class 1259 OID 41209)
+-- Dependencies: 5
+-- Name: transaccionCuenta; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE "transaccionCuenta" (
+    "idCuenta" character varying(10),
+    "idTransaccion" character varying(10),
+    cargado boolean
+);
+
+
+ALTER TABLE public."transaccionCuenta" OWNER TO postgres;
+
+--
+-- TOC entry 1947 (class 0 OID 41200)
+-- Dependencies: 161 1951
+-- Data for Name: cuenta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY cuenta ("idCuenta", "tipoCuenta", descripcion) FROM stdin;
+a.2	A	Efectivo
+a.1	A	Mobiliario
+a.3	A	IVA Acreditable
+1.0	A	qdgf
+\.
+
+
+--
+-- TOC entry 1948 (class 0 OID 41203)
+-- Dependencies: 162 1951
+-- Data for Name: saldoInicial; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "saldoInicial" ("idCuenta", monto, cargado, fecha) FROM stdin;
+a.2	240.40	t	2013-11-01 00:00:00
+a.1	40.50	t	2013-11-01 00:00:00
+\.
+
+
+--
+-- TOC entry 1949 (class 0 OID 41206)
+-- Dependencies: 163 1951
+-- Data for Name: transaccion; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY transaccion ("idTransaccion", "noFactura", fecha) FROM stdin;
+a.3	1	2013-05-10 00:00:00
+a.2	1000	2013-11-10 00:00:00
+a.9	1000	2013-11-10 00:00:00
+\.
+
+
+--
+-- TOC entry 1950 (class 0 OID 41209)
+-- Dependencies: 164 1951
+-- Data for Name: transaccionCuenta; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY "transaccionCuenta" ("idCuenta", "idTransaccion", cargado) FROM stdin;
+a.2	a.9	t
+\.
+
+
+--
+-- TOC entry 1939 (class 2606 OID 41213)
+-- Dependencies: 161 161 1952
+-- Name: cuenta_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY cuenta
+    ADD CONSTRAINT cuenta_pkey PRIMARY KEY ("idCuenta");
+
+
+--
+-- TOC entry 1941 (class 2606 OID 41225)
+-- Dependencies: 162 162 162 1952
+-- Name: saldoInicial_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY "saldoInicial"
+    ADD CONSTRAINT "saldoInicial_pkey" PRIMARY KEY ("idCuenta", fecha);
+
+
+--
+-- TOC entry 1943 (class 2606 OID 41227)
+-- Dependencies: 163 163 1952
+-- Name: transaccion_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY transaccion
+    ADD CONSTRAINT transaccion_pkey PRIMARY KEY ("idTransaccion");
+
+
+--
+-- TOC entry 1944 (class 2606 OID 41219)
+-- Dependencies: 1938 161 162 1952
+-- Name: saldoInicial_idCuenta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "saldoInicial"
+    ADD CONSTRAINT "saldoInicial_idCuenta_fkey" FOREIGN KEY ("idCuenta") REFERENCES cuenta("idCuenta");
+
+
+--
+-- TOC entry 1946 (class 2606 OID 41233)
+-- Dependencies: 164 1938 161 1952
+-- Name: transaccionCuenta_idCuenta_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "transaccionCuenta"
+    ADD CONSTRAINT "transaccionCuenta_idCuenta_fkey" FOREIGN KEY ("idCuenta") REFERENCES cuenta("idCuenta");
+
+
+--
+-- TOC entry 1945 (class 2606 OID 41228)
+-- Dependencies: 1942 163 164 1952
+-- Name: transaccionCuenta_idTransaccion_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY "transaccionCuenta"
+    ADD CONSTRAINT "transaccionCuenta_idTransaccion_fkey" FOREIGN KEY ("idTransaccion") REFERENCES transaccion("idTransaccion");
+
+
+--
+-- TOC entry 1957 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2013-10-15 17:56:47 CST
+
+--
+-- PostgreSQL database dump complete
+--
+
